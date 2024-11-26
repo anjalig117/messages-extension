@@ -28,31 +28,51 @@ languageSelect.addEventListener("change", function(){
 
 saveBtn.addEventListener("click", function(){
     // pending - check for validations
-    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-    //     // myLeads.push(tabs[0].url)
-    //     let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
-    //     greetings.push(item)
-    // })
-    let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        // myLeads.push(tabs[0].url)
+        let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
+        greetings.push(item)
+    })
+    // let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
     // console.log(item)
-    greetings.push(item)
+    // greetings.push(item)
+
+    // clear the form
+    categoryInp.value = ''
+    messageText.value = ''
+    languageSelect.value = 'Select language'
     renderGreetings()
 })
 
 function renderGreetings(){
     let greeting = ''
     for (let i = 0; i < greetings.length; i++){
+        let item = greetings[i]
         greeting += `
-            <div class="card">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class = "d-flex justify-content-between">
+                        <div class = "col-md-6">
+                            <h5 class="card-title badge text-bg-primary">${item.category}</h5>
+                            <span class="badge text-bg-warning">${item.language}</span>
+                        </div>
+                        <div class = "col-md-6 text-align-end">
+                            <button type="button" class="copy-btn btn btn-primary btn-sm">Copy</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title badge text-bg-primary">${greetings[i].category}</h5>
-                    <span class="badge text-bg-warning">${greetings[i].language}</span>
-                    <a class = "nav-link" href = ${greetings[i].source} target = "_blank"><p class="card-text">${greetings[i].message}</p></a>
+
+                    <a class = "nav-link" href = ${item.source} target = "_blank"><p class="card-text">${item.message}</p></a>
                 </div>
             </div>
         `
     }
     showGreetingEl.innerHTML = greeting
+}
+
+function copyMessage(msg){
+    console.log("copy btn is clicked", msg)
 }
 
 
