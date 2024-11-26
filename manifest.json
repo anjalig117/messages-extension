@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "Save Greetings",
+    "version": "1.0.0",
+    "description": "Save greetings message",
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": "images.png"
+    },
+    "permissions": [
+        "tabs"
+    ]
+  }
