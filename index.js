@@ -20,7 +20,7 @@ function renderCat(){
 
 languageSelect.addEventListener("change", function(){
     // console.log(categoryInp.value)
-    if (categoryInp.value != ''){
+    if (categoryInp.value != '' && (!category.includes(categoryInp.value))){
         category.push(categoryInp.value)
         renderCat()
     }
@@ -28,14 +28,18 @@ languageSelect.addEventListener("change", function(){
 
 saveBtn.addEventListener("click", function(){
     // pending - check for validations
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        // myLeads.push(tabs[0].url)
-        let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
-        greetings.push(item)
-    })
-    // let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
-    // console.log(item)
-    // greetings.push(item)
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    //     let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
+    //     greetings.push(item)
+
+    //     // clear the form
+    //     categoryInp.value = ''
+    //     messageText.value = ''
+    //     languageSelect.value = 'Select language'
+    //     renderGreetings()
+    // })
+    let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
+    greetings.push(item)
 
     // clear the form
     categoryInp.value = ''
@@ -48,6 +52,7 @@ function renderGreetings(){
     let greeting = ''
     for (let i = 0; i < greetings.length; i++){
         let item = greetings[i]
+        let msg = item.message
         greeting += `
             <div class="card mb-3">
                 <div class="card-header">
@@ -57,7 +62,8 @@ function renderGreetings(){
                             <span class="badge text-bg-warning">${item.language}</span>
                         </div>
                         <div class = "col-md-6 text-align-end">
-                            <button type="button" class="copy-btn btn btn-primary btn-sm">Copy</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick = "copyMessage('${msg}')">Copy</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick = "deleteMessage('${i}')">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -72,7 +78,14 @@ function renderGreetings(){
 }
 
 function copyMessage(msg){
-    console.log("copy btn is clicked", msg)
+    navigator.clipboard.writeText(msg);
+}
+
+function deleteMessage(indexe){
+    if (indexe > -1){
+        greetings.splice(indexe, 1)
+        renderGreetings()
+    }
 }
 
 
