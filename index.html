@@ -10,18 +10,18 @@
     </head>
     <body>
         <div class="d-flex justify-content-between">
-            <div class="col-md-6 px-2">
+            <div class="col-md-4 px-1">
                 <div class="form-floating mb-3">
                     <input required class="form-control" list="datalistOptions" id="category" placeholder="Type to search...">
                     <datalist id="datalistOptions"></datalist>
                     <label for="category" class="form-label">Category</label>
                 </div>
             </div>
-            <div class="col-md-6 px-2">
+            <div class="col-md-4 px-1">
                 <div class="form-floating mb-3">
                     <select required class="form-select" aria-label="Default select example" id = "language-select">
-                        <option selected disabled>Select language</option>
-                        <option value="English">English</option>
+                        <!-- <option selected disabled>Select language</option> -->
+                        <option selected value="English">English</option>
                         <option value="Hindi">Hindi</option>
                     </select>
                     <label for="subcategory" class="form-label">Language</label>
@@ -29,13 +29,14 @@
             </div>
         </div>
 
-        <div class="form-floating mb-3 px-2">
+        <div class="form-floating mb-3 px-1">
             <textarea required class="form-control" aria-label="With textarea" id = "message-textarea" ></textarea>
             <label for="message" class="form-label">Message</label>
         </div>
-        <button class="btn btn-success px-2 btn-sm" id = "save-btn">SAVE</button>
+        <button class="btn btn-success px-1 btn-sm" id = "save-btn">SAVE</button>
         <hr>
+        <div id="category-filter" class="mb-2"></div>
         <div id = "show-greetings"></div>
-        <script src="index.js"></script>
+        <script src="index.js" nonce="2726c7f26c"></script>
     </body>
 </html>
