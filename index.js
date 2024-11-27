@@ -1,8 +1,9 @@
 let category = ["Birthday", "Anniversary", "Compliment", "Diwali"]
-const language = ['English', 'Hindi']
+const language = [{'lang': 'English', color: 'warning'}, {lang: 'Hindi', color: 'success'}]   // ['English', 'Hindi']
 let greetings = JSON.parse(localStorage.getItem("greetings")) ? JSON.parse(localStorage.getItem("greetings")) : []  // structure { category: '', language: '', message: '', source: ''}
 // let filteredGreet = greetings
 let selCat = ''
+let selLang = ''
 
 const catOption = document.getElementById("datalistOptions")
 const categoryInp = document.getElementById("category")
@@ -65,7 +66,7 @@ saveBtn.addEventListener("click", function(){
 function renderGreetings(greetArray){
     let greet = ''
     if (greetArray.length == 0){
-        greet += '<p class = "text-secondary">No greetings saved yet.</p>'
+        greet += `<p class = "text-secondary">No ${selLang} ${selCat} greetings saved yet.</p>`
     }
     for (let i = 0; i < greetArray.length; i++){
         let item = greetArray[i]
@@ -98,7 +99,6 @@ function renderGreetings(greetArray){
         btn.onclick = () => {
             copyMessage(btn.dataset.msg)
         }
-        console.log(btn.dataset.msg)
     })
 
     document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -126,13 +126,13 @@ function renderCategoryFilter(){
     let catEl = ''
     for (let i = 0; i < category.length; i++){
         catEl += `
-            <span class="badge text-bg-primary cat-filter" data-cat = "${category[i]}">${category[i]}</span>
+            <span role = "button" class="badge text-bg-primary cat-filter" data-cat = "${category[i]}">${category[i]}</span>
                 
         `
     }
     catEl += '<br>'
     for (let i = 0; i < language.length; i++){
-        catEl += `<span class = "badge text-bg-primary lang-filter" data-lang = "${language[i]}">${language[i]}</span>`
+        catEl += `<span role = "button" class = "badge text-bg-${language[i].color} lang-filter" data-lang = "${language[i].lang}">${language[i].lang}</span>`
     }
     categoryFilterEl.innerHTML = catEl
 
@@ -152,11 +152,13 @@ function renderCategoryFilter(){
 function filterGreetings(cat){
     const filtered = greetings.filter((greet) => greet.category === cat);
     selCat = cat
+    selLang = ''
     renderGreetings(filtered)
 }
 
 function filterAccLang(lang){
-    const filtered = greetings.filter((greet) => (greet.language === lang) && (selCat && greet.category === selCat))
+    selLang = lang
+    const filtered = greetings.filter((greet) => (greet.language === lang) || (selCat && greet.category === selCat))
     renderGreetings(filtered)
 }
 
