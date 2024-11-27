@@ -31,34 +31,35 @@ languageSelect.addEventListener("change", function(){
 
 saveBtn.addEventListener("click", function(){
     // pending - check for validations
-    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-    //     let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
-    //     greetings.push(item)
-    //     localStorage.setItem("greetings", JSON.stringify(greetings))
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        console.log("tabs are ", tabs)
+        let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
+        greetings.push(item)
+        localStorage.setItem("greetings", JSON.stringify(greetings))
 
-    //     // clear the form
-    //     categoryInp.value = ''
-    //     messageText.value = ''
-    //     languageSelect.value = 'English'
-    //     renderGreetings(greetings)
-    //     if (categoryFilterEl.innerHTML === ''){
-    //             renderCategoryFilter()
-    //     }
-    // })
-    let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
-    greetings.push(item)
-    localStorage.setItem("greetings", JSON.stringify(greetings))
+        // clear the form
+        categoryInp.value = ''
+        messageText.value = ''
+        languageSelect.value = 'English'
+        renderGreetings(greetings)
+        if (categoryFilterEl.innerHTML === ''){
+                renderCategoryFilter()
+        }
+    })
+    // let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
+    // greetings.push(item)
+    // localStorage.setItem("greetings", JSON.stringify(greetings))
 
-    // // filteredGreet = greetings
+    // // // filteredGreet = greetings
 
-    // clear the form
-    categoryInp.value = ''
-    messageText.value = ''
-    languageSelect.value = 'English'
-    renderGreetings(greetings)
-    if (categoryFilterEl.innerHTML === ''){
-        renderCategoryFilter()
-    }
+    // // clear the form
+    // categoryInp.value = ''
+    // messageText.value = ''
+    // languageSelect.value = 'English'
+    // renderGreetings(greetings)
+    // if (categoryFilterEl.innerHTML === ''){
+    //     renderCategoryFilter()
+    // }
 })
 
 function renderGreetings(greetArray){
@@ -78,8 +79,9 @@ function renderGreetings(greetArray){
                             <span class="badge text-bg-warning">${item.language}</span>
                         </div>
                         <div class = "col-md-6 text-align-end">
-                            <button type="button" class="btn btn-primary btn-sm" onclick = "copyMessage('${msg}')">Copy</button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick = "deleteMessage('${i}')">Delete</button>
+                
+                            <button type="button" class="btn btn-primary btn-sm copy-btn" data-msg = '${msg}'>Copy</button>
+                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-id = '${i}'>Delete</button>
                         </div>
                     </div>
                 </div>
@@ -91,6 +93,19 @@ function renderGreetings(greetArray){
         `
     }
     showGreetingEl.innerHTML = greet
+    // console.log(document.querySelectorAll('.copy-btn'))
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.onclick = () => {
+            copyMessage(btn.dataset.msg)
+        }
+        console.log(btn.dataset.msg)
+    })
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = () => {
+            deleteMessage(btn.dataset.id)
+        }
+    })
 }
 
 function copyMessage(msg){
@@ -111,26 +126,36 @@ function renderCategoryFilter(){
     let catEl = ''
     for (let i = 0; i < category.length; i++){
         catEl += `
-            <span class="badge text-bg-primary" onclick = "filterGreetings('${category[i]}')">${category[i]}</span>
+            <span class="badge text-bg-primary cat-filter" data-cat = "${category[i]}">${category[i]}</span>
                 
         `
     }
     catEl += '<br>'
     for (let i = 0; i < language.length; i++){
-        catEl += `<span class = "badge text-bg-primary" onclick = "filterAccLang('${language[i]}')">${language[i]}</span>`
+        catEl += `<span class = "badge text-bg-primary lang-filter" data-lang = "${language[i]}">${language[i]}</span>`
     }
     categoryFilterEl.innerHTML = catEl
+
+    document.querySelectorAll('.cat-filter').forEach(fil => {
+        fil.onclick = () => {
+            filterGreetings(fil.dataset.cat)
+        }
+    })
+
+    document.querySelectorAll('.lang-filter').forEach(fil => {
+        fil.onclick = () => {
+            filterAccLang(fil.dataset.lang)
+        }
+    })
 }
 
 function filterGreetings(cat){
     const filtered = greetings.filter((greet) => greet.category === cat);
-    console.log(filtered)
     selCat = cat
     renderGreetings(filtered)
 }
 
 function filterAccLang(lang){
-    console.log(selCat)
     const filtered = greetings.filter((greet) => (greet.language === lang) && (selCat && greet.category === selCat))
     renderGreetings(filtered)
 }
