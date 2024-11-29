@@ -1,4 +1,5 @@
-let category = ["Birthday", "Anniversary", "Compliment", "Diwali"]
+JSON.parse(localStorage.getItem('category')) ? '' : localStorage.setItem('category', JSON.stringify(["Birthday", "Anniversary", "Compliment", "Diwali"]))
+let category = JSON.parse(localStorage.getItem('category'))
 const language = [{'lang': 'English', color: 'warning'}, {lang: 'Hindi', color: 'success'}]   // ['English', 'Hindi']
 let greetings = JSON.parse(localStorage.getItem("greetings")) ? JSON.parse(localStorage.getItem("greetings")) : []  // structure { category: '', language: '', message: '', source: ''}
 // let filteredGreet = greetings
@@ -24,44 +25,38 @@ function renderCat(){
 
 languageSelect.addEventListener("change", function(){
     // console.log(categoryInp.value)
-    if (categoryInp.value != '' && (!category.includes(categoryInp.value))){
-        category.push(categoryInp.value)
-        renderCat()
-    }
+    detectAndSaveNewCat()
 })
 
 saveBtn.addEventListener("click", function(){
+    detectAndSaveNewCat()
     // pending - check for validations
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         console.log("tabs are ", tabs)
-        let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: tabs[0].url}
+        let lan = languageSelect.value.split(", ")
+        let item = { category: categoryInp.value, language: {lang: lan[0], color: lan[1]}, message: messageText.value, source: tabs[0].url}
         greetings.push(item)
         localStorage.setItem("greetings", JSON.stringify(greetings))
 
         // clear the form
         categoryInp.value = ''
         messageText.value = ''
-        languageSelect.value = 'English'
+        languageSelect.value = 'English, warning'
         renderGreetings(greetings)
         if (categoryFilterEl.innerHTML === ''){
                 renderCategoryFilter()
         }
     })
-    // let item = { category: categoryInp.value, language: languageSelect.value, message: messageText.value, source: window.location.toString()}
-    // greetings.push(item)
-    // localStorage.setItem("greetings", JSON.stringify(greetings))
-
-    // // // filteredGreet = greetings
-
-    // // clear the form
-    // categoryInp.value = ''
-    // messageText.value = ''
-    // languageSelect.value = 'English'
-    // renderGreetings(greetings)
-    // if (categoryFilterEl.innerHTML === ''){
-    //     renderCategoryFilter()
-    // }
 })
+
+function detectAndSaveNewCat(){
+    if (categoryInp.value != '' && (!category.includes(categoryInp.value))){
+        console.log('new category detected')
+        category.push(categoryInp.value)
+        localStorage.setItem('category', JSON.stringify(category))
+        renderCat()
+    }
+}
 
 function renderGreetings(greetArray){
     let greet = ''
@@ -77,7 +72,7 @@ function renderGreetings(greetArray){
                     <div class = "d-flex justify-content-between">
                         <div class = "col-md-6">
                             <h5 class="card-title badge text-bg-primary">${item.category}</h5>
-                            <span class="badge text-bg-warning">${item.language}</span>
+                            <span class="badge text-bg-${item.language.color}">${item.language.lang}</span>
                         </div>
                         <div class = "col-md-6 text-align-end">
                 
@@ -97,7 +92,7 @@ function renderGreetings(greetArray){
     // console.log(document.querySelectorAll('.copy-btn'))
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.onclick = () => {
-            copyMessage(btn.dataset.msg)
+            copyMessage(btn, btn.dataset.msg)
         }
     })
 
@@ -108,8 +103,12 @@ function renderGreetings(greetArray){
     })
 }
 
-function copyMessage(msg){
+function copyMessage(btn, msg){
+    console.log('copy message function called', btn)
     navigator.clipboard.writeText(msg);
+    btn.setAttribute('data-bs-toggle', 'tooltip')
+    btn.setAttribute('data-bs-placement', 'bottom')
+    btn.setAttribute('data-bs-title', 'Greeting copied !')
 }
 
 function deleteMessage(indexe){
@@ -132,7 +131,7 @@ function renderCategoryFilter(){
     }
     catEl += '<br>'
     for (let i = 0; i < language.length; i++){
-        catEl += `<span role = "button" class = "badge text-bg-${language[i].color} lang-filter" data-lang = "${language[i].lang}">${language[i].lang}</span>`
+        catEl += `<span role = "button" class = "mr-2 badge text-bg-${language[i].color} lang-filter" data-lang = "${language[i].lang}">${language[i].lang}</span>`
     }
     categoryFilterEl.innerHTML = catEl
 
@@ -158,7 +157,7 @@ function filterGreetings(cat){
 
 function filterAccLang(lang){
     selLang = lang
-    const filtered = greetings.filter((greet) => (greet.language === lang) || (selCat && greet.category === selCat))
+    const filtered = greetings.filter((greet) => (greet.language.lang === lang) || (selCat && greet.category === selCat))
     renderGreetings(filtered)
 }
 
@@ -168,3 +167,4 @@ if (greetings.length > 0){
     renderCategoryFilter()
     renderGreetings(greetings)
 }
+
