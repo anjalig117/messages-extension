@@ -125,24 +125,34 @@ function renderCategoryFilter(){
     let catEl = ''
     for (let i = 0; i < category.length; i++){
         catEl += `
-            <span role = "button" class="badge text-bg-primary cat-filter" data-cat = "${category[i]}">${category[i]}</span>
+            <span role = "button" class="btn btn-sm btn-outline-primary cat-filter mb-2" data-cat = "${category[i]}">${category[i]}</span>
                 
         `
     }
     catEl += '<br>'
     for (let i = 0; i < language.length; i++){
-        catEl += `<span role = "button" class = "mr-2 badge text-bg-${language[i].color} lang-filter" data-lang = "${language[i].lang}">${language[i].lang}</span>`
+        catEl += `<span role = "button" class = "mr-5 btn btn-sm btn-outline-danger lang-filter" data-lang = "${language[i].lang}">${language[i].lang}</span>`
     }
     categoryFilterEl.innerHTML = catEl
 
     document.querySelectorAll('.cat-filter').forEach(fil => {
         fil.onclick = () => {
+            let current = document.querySelector(".activeCat")
+            if (current){
+                current.classList.remove('activeCat')
+            }
+            fil.classList.add('activeCat')
             filterGreetings(fil.dataset.cat)
         }
     })
 
     document.querySelectorAll('.lang-filter').forEach(fil => {
         fil.onclick = () => {
+            let current = document.querySelector(".active-lang")
+            if (current){
+                current.classList.remove('active-lang')
+            }
+            fil.classList.add('active-lang')
             filterAccLang(fil.dataset.lang)
         }
     })

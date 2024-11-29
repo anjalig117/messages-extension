@@ -6,3 +6,19 @@ body{
     min-height: 400px;
     overflow: scroll;
 }
+
+.activeCat{
+    background-color: #3B71CA !important;
+    border: 1px solid #3B71CA !important;
+    color: white !important;
+}
+
+.mr-5{
+    margin-right: 5px !important;
+}
+
+.active-lang{
+    background-color: #DC4C64 !important;
+    border: 1px solid #DC4C64 !important;
+    color: white !important;
+}
